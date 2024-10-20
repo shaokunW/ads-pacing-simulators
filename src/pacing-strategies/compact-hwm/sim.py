@@ -1,37 +1,24 @@
 import numpy as np
-# offline
 
-n = 3
-m = 4
 # Biparti Graph
 # given n supplies and m demands
 
-
-# define demand
-demands= np.zeros(m)
-# define supply
-supplies = np.zeros(n)
-# define edges
-edges = np.zeros((n, m))
-
 # objective
 # solver
-def solve(supplies, demands, edges, order_func):
+def solve(supplies, demands, edges):
     remaing_supplies = supplies.copy()
-    demands = order_func(demands)
     d_s = {}
-    for d_i in range(demands):
+    for d_i in range(len(demands)):
         targeted = []
-        for s_j in range(supplies):
+        for s_j in range(len(supplies)):
             if edges[s_j][d_i]:
                 targeted.append(s_j)
         d_s[d_i] = targeted
     alphas = []
-    for d_i in range(demands):
+    for d_i in range(len(demands)):
         targeted = d_s[d_i]
-        targetd_supplies = [supplies[j] for j in targeted]
         # a) solve alphaj
-        alpha = solve_alpha(targetd_supplies, remaing_supplies, demands[d_i])
+        alpha = solve_alpha(targeted, supplies, remaing_supplies, demands[d_i])
         # b) update ri
         for s_j in targeted:
             r = remaing_supplies[s_j]
