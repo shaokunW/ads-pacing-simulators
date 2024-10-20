@@ -53,5 +53,51 @@ def allocation_order(arr):
 
 
 # online serving
-def online_serve(supplies, demands, edges, alphas, order_func, feedback_func):
-    pass
+def simulate(supplies, edges, alphas, iter_factory= lambda x: BasicIterator(x), feedback_func = lambda x:x):
+    result = {}
+    for i in range(len(supplies)):
+        # print('start simulate supply:{}'.format(i))
+        e = edges[i]
+        qulifiedDemandIds = []
+        qualifiedAlphas = []
+        for j in range(len(e)):
+            if e[j]:
+                qulifiedDemandIds.append(j)
+                qualifiedAlphas.append(alphas[j])
+        # print("qualified demandIds:{}, qulifiedAlphas:{}".format(qulifiedDemandIds, qualifiedAlphas))
+        iter = iter_factory(supplies[i])
+        for s in iter:
+            selected = select(qualifiedAlphas)
+            # print('supply:{}, num:{}, selected:{}'.format(i, s, selected))
+            if selected > -1:
+                demandId = qulifiedDemandIds[selected]
+                result[demandId] = result.get(demandId, 0) + feedback_func(s)
+    return result
+
+def select(alphas):
+    for i in range(len(alphas)):
+        if np.random.rand() < alphas[i]:
+            return i
+    return -1
+
+class BasicIterator:
+    def __init__(self, total, batch = -1):
+        _batch = batch
+        if batch == -1:
+            _batch = total
+        self.current = 0
+        self.batch = _batch
+        self.max_value = total
+    
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        if self.current < self.max_value:
+            result = self.batch
+            if result + self.current >= self.max_value:
+                result = self.max_value - self.current
+            self.current += result
+            return result
+        else:
+            raise StopIteration

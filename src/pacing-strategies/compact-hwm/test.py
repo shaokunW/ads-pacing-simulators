@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from sim import solve, online_serve
+from sim import solve, simulate, BasicIterator
 
 K = 1_000
 M = 1_000_000
@@ -21,8 +21,12 @@ class TestSolver(unittest.TestCase):
         edges[3][1] = edges[3][2] = True
         edges[4][2] = True
         edges[5][2] = True
-        probs = solve(supplies, demands, edges)
-        print(probs)
+        print(edges)
+        alphas = solve(supplies, demands, edges)
+        print(alphas)
+        iterFacotry = lambda x: BasicIterator(x, x // 1000)
+        result = simulate(supplies, edges, alphas, iterFacotry)
+        print(result)
         
     
     def test2(self):
