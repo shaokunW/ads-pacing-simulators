@@ -67,16 +67,19 @@ def simulate(supplies, edges, alphas, iter_factory= lambda x: BasicIterator(x), 
         # print("qualified demandIds:{}, qulifiedAlphas:{}".format(qulifiedDemandIds, qualifiedAlphas))
         iter = iter_factory(supplies[i])
         for s in iter:
-            selected = select(qualifiedAlphas)
+            selected = onlineSelect(qualifiedAlphas)
             # print('supply:{}, num:{}, selected:{}'.format(i, s, selected))
             if selected > -1:
                 demandId = qulifiedDemandIds[selected]
                 result[demandId] = result.get(demandId, 0) + feedback_func(s)
     return result
 
-def select(alphas):
+def onlineSelect(alphas):
+    sum = 0
+    prob = np.random.rand() 
     for i in range(len(alphas)):
-        if np.random.rand() < alphas[i]:
+        sum += alphas[i]
+        if prob <= sum:
             return i
     return -1
 
